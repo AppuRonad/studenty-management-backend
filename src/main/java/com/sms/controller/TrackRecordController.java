@@ -5,6 +5,7 @@ import com.sms.service.TrackRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/track-records")
@@ -14,6 +15,12 @@ public class TrackRecordController {
     @Autowired
     private TrackRecordService service;
 
+    // GET /api/track-records  — all records (for analytics)
+    @GetMapping
+    public ResponseEntity<List<TrackRecord>> getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
     // GET /api/track-records/{studentId}
     @GetMapping("/{studentId}")
     public ResponseEntity<?> getByStudentId(@PathVariable String studentId) {
@@ -22,7 +29,7 @@ public class TrackRecordController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    // PUT /api/track-records/{studentId}  (create or update)
+    // PUT /api/track-records/{studentId}  — full student-side upsert
     @PutMapping("/{studentId}")
     public ResponseEntity<?> upsert(
         @PathVariable String studentId,
@@ -32,7 +39,17 @@ public class TrackRecordController {
         return ResponseEntity.ok(saved);
     }
 
-    // POST /api/track-records  (create new)
+    // PUT /api/track-records/{studentId}/admin-marks  — admin only
+    @PutMapping("/{studentId}/admin-marks")
+    public ResponseEntity<?> upsertAdminMarks(
+        @PathVariable String studentId,
+        @RequestBody TrackRecord.AdminMarks marks
+    ) {
+        TrackRecord saved = service.upsertAdminMarks(studentId.toUpperCase(), marks);
+        return ResponseEntity.ok(saved);
+    }
+
+    // POST /api/track-records  — create new
     @PostMapping
     public ResponseEntity<?> create(@RequestBody TrackRecord record) {
         TrackRecord saved = service.save(record);

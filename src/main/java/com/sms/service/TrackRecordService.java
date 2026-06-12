@@ -20,7 +20,11 @@ public class TrackRecordService {
         return repository.save(record);
     }
 
-    // Upsert — create if not exists, update if exists
+    public java.util.List<TrackRecord> getAll() {
+        return repository.findAll();
+    }
+
+    // Full upsert — create or replace all student-editable fields
     public TrackRecord upsert(String studentId, TrackRecord record) {
         return repository.findByStudentId(studentId).map(existing -> {
             existing.setSemesters(record.getSemesters());
@@ -28,10 +32,27 @@ public class TrackRecordService {
             existing.setAssignments(record.getAssignments());
             existing.setProjects(record.getProjects());
             existing.setCertifications(record.getCertifications());
+            existing.setInternships(record.getInternships());
+            existing.setExamResults(record.getExamResults());
+            existing.setYearCgpas(record.getYearCgpas());
+            // Never overwrite adminMarks from student-side upsert
             return repository.save(existing);
         }).orElseGet(() -> {
             record.setStudentId(studentId);
             return repository.save(record);
+        });
+    }
+
+    // Admin-only: update marks / grade / pass-fail
+    public TrackRecord upsertAdminMarks(String studentId, TrackRecord.AdminMarks marks) {
+        return repository.findByStudentId(studentId).map(existing -> {
+            existing.setAdminMarks(marks);
+            return repository.save(existing);
+        }).orElseGet(() -> {
+            TrackRecord rec = new TrackRecord();
+            rec.setStudentId(studentId);
+            rec.setAdminMarks(marks);
+            return repository.save(rec);
         });
     }
 

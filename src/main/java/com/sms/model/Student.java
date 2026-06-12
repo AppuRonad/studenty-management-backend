@@ -40,6 +40,12 @@ public class Student {
 
     private int avatar;
 
+    // ── New academic fields ──────────────────────────────────────────────────
+    private Integer yearOfStudy;       // 1 / 2 / 3 / 4
+    private Integer courseDuration;    // total years e.g. 4 for B.Tech, 2 for MBA
+    private String  academicYear;      // e.g. "2023-24"
+    private String  admissionNumber;   // optional
+
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -70,4 +76,16 @@ public class Student {
 
     public int getAvatar() { return avatar; }
     public void setAvatar(int avatar) { this.avatar = avatar; }
+
+    public Integer getYearOfStudy() { return yearOfStudy; }
+    public void setYearOfStudy(Integer yearOfStudy) { this.yearOfStudy = yearOfStudy; }
+
+    public Integer getCourseDuration() { return courseDuration; }
+    public void setCourseDuration(Integer courseDuration) { this.courseDuration = courseDuration; }
+
+    public String getAcademicYear() { return academicYear; }
+    public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
+
+    public String getAdmissionNumber() { return admissionNumber; }
+    public void setAdmissionNumber(String admissionNumber) { this.admissionNumber = admissionNumber; }
 }
