@@ -1,35 +1,27 @@
-# ── Stage 1: Build ────────────────────────────────────────────────────────────
-FROM eclipse-temurin:17-jdk-alpine AS build
+# ── Stage 1: Build with Maven ─────────────────────────────────────────────────
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 
 WORKDIR /app
 
-# Copy Maven wrapper and pom first (for layer caching)
-COPY mvnw .
-COPY .mvn .mvn
+# Copy pom.xml first (dependency caching)
 COPY pom.xml .
 
-# Make mvnw executable
-RUN chmod +x mvnw
+# Download dependencies
+RUN mvn dependency:go-offline -B
 
-# Download dependencies (cached layer if pom.xml unchanged)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
+# Copy source
 COPY src src
 
-# Build the JAR, skip tests
-RUN ./mvnw clean package -DskipTests -B
+# Build JAR
+RUN mvn clean package -DskipTests -B
 
 # ── Stage 2: Run ──────────────────────────────────────────────────────────────
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Copy only the built JAR from build stage
 COPY --from=build /app/target/student-management-1.0.0.jar app.jar
 
-# Expose port
 EXPOSE 8080
 
-# Run
 ENTRYPOINT ["java", "-jar", "app.jar"]
