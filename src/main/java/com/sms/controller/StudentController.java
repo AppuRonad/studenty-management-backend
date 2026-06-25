@@ -33,6 +33,12 @@ public class StudentController {
         return ResponseEntity.ok(service.getAllStudents());
     }
 
+    // GET /api/students/by-department/{dept} — for member role
+    @GetMapping("/by-department/{dept}")
+    public ResponseEntity<List<Student>> getByDepartment(@PathVariable String dept) {
+        return ResponseEntity.ok(service.filterStudents(null, dept));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
         return service.getStudentById(id)
