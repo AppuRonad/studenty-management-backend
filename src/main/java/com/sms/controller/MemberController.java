@@ -80,4 +80,15 @@ public class MemberController {
         boolean success = (boolean) result.get("success");
         return success ? ResponseEntity.ok(result) : ResponseEntity.notFound().build();
     }
+
+    // PUT /api/member/{id}/permissions
+    // Body: { "viewStudents": true, "addStudents": false, ... }
+    @PutMapping("/{id}/permissions")
+    public ResponseEntity<?> updatePermissions(
+            @PathVariable String id,
+            @RequestBody java.util.Map<String, Boolean> permissions) {
+        Map<String, Object> result = memberService.updatePermissions(id, permissions);
+        boolean success = (boolean) result.get("success");
+        return success ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
+    }
 }

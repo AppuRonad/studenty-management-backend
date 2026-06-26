@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Document(collection = "members")
 public class Member {
@@ -18,7 +20,7 @@ public class Member {
 
     private String passwordHash;
 
-    private String department; // Member can only see this department
+    private String department; // Member is locked to ONE department
 
     private String phone;
 
@@ -27,12 +29,42 @@ public class Member {
     // REJECTED = denied
     private String status = "PENDING";
 
-    private String approvedBy; // Admin ID who approved
+    private String approvedBy;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime approvedAt;
 
-    // Getters & Setters
+    /**
+     * Granular permission map — admin toggles each permission per member.
+     * All default to FALSE (denied). Admin must explicitly enable.
+     *
+     * Keys:
+     *  viewStudents    — can view department students list
+     *  addStudents     — can add new students to their dept
+     *  editStudents    — can edit student details in their dept
+     *  deleteStudents  — can delete students in their dept
+     *  viewAnalytics   — can view analytics for their dept
+     *  addMarks        — can add/edit marks & track records
+     *  addAttendance   — can add attendance records
+     *  viewCompetitions— can view competition records
+     *  addCompetitions — can add competition entries
+     *  messaging       — can send messages to students
+     */
+    private Map<String, Boolean> permissions = new HashMap<>(Map.of(
+        "viewStudents",     false,
+        "addStudents",      false,
+        "editStudents",     false,
+        "deleteStudents",   false,
+        "viewAnalytics",    false,
+        "addMarks",         false,
+        "addAttendance",    false,
+        "viewCompetitions", false,
+        "addCompetitions",  false,
+        "messaging",        false
+    ));
+
+    // ── Getters & Setters ─────────────────────────────────────────────────────
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -62,4 +94,7 @@ public class Member {
 
     public LocalDateTime getApprovedAt() { return approvedAt; }
     public void setApprovedAt(LocalDateTime approvedAt) { this.approvedAt = approvedAt; }
+
+    public Map<String, Boolean> getPermissions() { return permissions; }
+    public void setPermissions(Map<String, Boolean> permissions) { this.permissions = permissions; }
 }

@@ -118,6 +118,20 @@ public class MemberService {
         return Map.of("success", true, "message", "Member deleted");
     }
 
+    public Map<String, Object> updatePermissions(String memberId, java.util.Map<String, Boolean> newPermissions) {
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if (member == null) return Map.of("success", false, "message", "Member not found");
+
+        // Merge new permissions into existing (only update keys provided)
+        java.util.Map<String, Boolean> current = member.getPermissions();
+        if (current == null) current = new java.util.HashMap<>();
+        current.putAll(newPermissions);
+        member.setPermissions(current);
+        memberRepository.save(member);
+
+        return Map.of("success", true, "message", "Permissions updated", "member", safeMember(member));
+    }
+
     private Map<String, Object> safeMember(Member m) {
         Map<String, Object> safe = new HashMap<>();
         safe.put("id", m.getId());
