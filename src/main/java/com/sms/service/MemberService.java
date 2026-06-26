@@ -134,15 +134,17 @@ public class MemberService {
 
     private Map<String, Object> safeMember(Member m) {
         Map<String, Object> safe = new HashMap<>();
-        safe.put("id", m.getId());
-        safe.put("fullName", m.getFullName());
-        safe.put("email", m.getEmail());
-        safe.put("phone", m.getPhone());
-        safe.put("department", m.getDepartment());
-        safe.put("status", m.getStatus());
-        safe.put("approvedBy", m.getApprovedBy());
-        safe.put("createdAt", m.getCreatedAt());
-        safe.put("approvedAt", m.getApprovedAt());
+        safe.put("id",          m.getId());
+        safe.put("fullName",    m.getFullName());
+        safe.put("email",       m.getEmail());
+        safe.put("phone",       m.getPhone());
+        safe.put("department",  m.getDepartment());
+        safe.put("status",      m.getStatus());
+        safe.put("approvedBy",  m.getApprovedBy());
+        safe.put("createdAt",   m.getCreatedAt());
+        safe.put("approvedAt",  m.getApprovedAt());
+        // ←← THIS was the bug: permissions were saved but never returned!
+        safe.put("permissions", m.getPermissions() != null ? m.getPermissions() : new java.util.HashMap<>());
         return safe;
     }
 }
