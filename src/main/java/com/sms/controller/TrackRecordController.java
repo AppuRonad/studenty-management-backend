@@ -49,6 +49,17 @@ public class TrackRecordController {
         return ResponseEntity.ok(saved);
     }
 
+    // PUT /api/track-records/{studentId}/attendance — admin OR member (with addAttendance permission)
+    // Partial update: only touches the attendance field, leaves everything else untouched
+    @PutMapping("/{studentId}/attendance")
+    public ResponseEntity<?> upsertAttendance(
+        @PathVariable String studentId,
+        @RequestBody TrackRecord.AttendanceSummary attendance
+    ) {
+        TrackRecord saved = service.upsertAttendance(studentId.toUpperCase(), attendance);
+        return ResponseEntity.ok(saved);
+    }
+
     // POST /api/track-records  — create new
     @PostMapping
     public ResponseEntity<?> create(@RequestBody TrackRecord record) {

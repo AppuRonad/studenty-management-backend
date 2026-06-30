@@ -56,6 +56,19 @@ public class TrackRecordService {
         });
     }
 
+    // Admin or Member (with addAttendance permission): partial update of attendance only
+    public TrackRecord upsertAttendance(String studentId, TrackRecord.AttendanceSummary attendance) {
+        return repository.findByStudentId(studentId).map(existing -> {
+            existing.setAttendance(attendance);
+            return repository.save(existing);
+        }).orElseGet(() -> {
+            TrackRecord rec = new TrackRecord();
+            rec.setStudentId(studentId);
+            rec.setAttendance(attendance);
+            return repository.save(rec);
+        });
+    }
+
     public boolean existsForStudent(String studentId) {
         return repository.existsByStudentId(studentId);
     }
